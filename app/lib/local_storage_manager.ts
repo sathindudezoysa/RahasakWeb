@@ -4,6 +4,5 @@ export const  saveToLocalStorage = ( keyname: string ,key: string) =>{
 
 export const getFromLocalStorage = (key: string): string | null => {
     const saveString = localStorage.getItem(key);
-    console.log(saveString)
     return saveString
 }

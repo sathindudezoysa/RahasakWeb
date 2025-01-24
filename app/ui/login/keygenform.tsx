@@ -2,19 +2,20 @@
 
 import { useState } from "react";
 import clsx from "clsx";
-import { keygen } from "../lib/openpgp";
+import { keygen } from "../../lib/openpgp";
+import Link from "next/link";
+import { getHashValue, isMatch } from "@/app/lib/hash";
+import { saveToLocalStorage } from "@/app/lib/local_storage_manager";
 
 export default function KeyGenForm() {
   const [formData, setFormData] = useState({
-    first_name: "sathindu",
-    last_name: "de zoysa",
+    username: "sathindu",
     email: "sathindu.d.zoysa@gmail.com",
     password: "123456",
   });
 
   const [errors, setErrors] = useState({
-    first_name: "",
-    last_name: "",
+    username: "",
     email: "",
     password: "",
   });
@@ -25,23 +26,17 @@ export default function KeyGenForm() {
 
   const validateForm = () => {
     const newErrors: {
-      first_name: string;
-      last_name: string;
+      username: string;
       email: string;
       password: string;
     } = {
-      first_name: "",
-      last_name: "",
+      username: "",
       email: "",
       password: "",
     };
 
-    if (!formData.first_name.trim()) {
-      newErrors.first_name = "Please fill out the first name field";
-    }
-
-    if (!formData.last_name.trim()) {
-      newErrors.last_name = "Please fill out the last name field";
+    if (!formData.username.trim()) {
+      newErrors.username = "Please fill out the first name field";
     }
 
     if (!formData.email.trim()) {
@@ -58,13 +53,13 @@ export default function KeyGenForm() {
 
     setErrors(newErrors);
 
-    return Object.keys(newErrors).some((error) => error !== "");
+    return Object.values(newErrors).every((error) => error === "");
   };
 
   const handleClick = async () => {
     if (validateForm()) {
       const success = await keygen(
-        formData.first_name,
+        formData.username,
         formData.email,
         formData.password
       );
@@ -73,57 +68,54 @@ export default function KeyGenForm() {
       } else {
         window.alert("Failed to generate keys");
       }
+      const hashValue = await getHashValue(formData.password);
+      if (hashValue.success) {
+        const userdata = {
+          name: formData.username,
+          email: formData.email,
+          password: hashValue.data,
+        };
+        saveToLocalStorage(formData.email, JSON.stringify(userdata));
+      } else {
+        window.alert(hashValue.error);
+      }
     }
   };
 
   return (
     <>
+      <div className="w-full">
+        <p className="mb-6 text-start" style={{ fontWeight: "bold" }}>
+          Register
+        </p>
+      </div>
       <form
         className="w-full max-w-lg mx-auto"
         onSubmit={(e) => e.preventDefault()}
       >
         <div className="flex flex-wrap -mx-3 mb-6">
-          <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+          <div className="w-full px-3">
             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-              First Name
+              username
             </label>
             <input
               className={clsx(
                 "appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500",
                 {
-                  "border-red-500": errors.first_name.length > 0,
+                  "border-red-500": errors.username.length > 0,
                 }
               )}
-              id="grid-first-name"
-              name="first_name"
+              id="username"
+              name="username"
               type="text"
-              placeholder="rahsak"
-              value={formData.first_name}
+              placeholder="Name"
+              value={formData.username}
               onChange={handleChange}
             />
-            <p className="text-red-500 text-xs italic">{errors.first_name}</p>
           </div>
-          <div className="w-full md:w-1/2 px-3">
-            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-              Last Name
-            </label>
-            <input
-              className={clsx(
-                "appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4  mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500",
-                {
-                  "border-red-500": errors.last_name.length > 0,
-                }
-              )}
-              id="grid-last-name"
-              name="last_name"
-              type="text"
-              placeholder="Doe"
-              value={formData.last_name}
-              onChange={handleChange}
-            />
-            <p className="text-red-500 text-xs italic">{errors.last_name}</p>
-          </div>
+          <p className="text-red-500 text-xs italic">{errors.username}</p>
         </div>
+
         <div className="flex flex-wrap -mx-3 mb-6">
           <div className="w-full px-3">
             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
@@ -172,12 +164,20 @@ export default function KeyGenForm() {
           </div>
         </div>
         <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mb-4"
           onClick={handleClick}
+          style={{ borderRadius: "6px" }}
         >
-          Create Keys
+          Register
         </button>
       </form>
+      <hr className="w-96 h-px my-8 bg-gray-200 border-0 dark:bg-gray-300" />
+      <div className="mt-4 flex flex-row ">
+        <p>Already have an Account</p>
+        <Link href={""} className="ml-2" style={{ color: "#007AFF" }}>
+          Login now
+        </Link>
+      </div>
     </>
   );
 }
