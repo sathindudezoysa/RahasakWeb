@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
+import { storeUserState } from "../lib/seesion_coockie";
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({
@@ -55,12 +56,12 @@ export default function LoginForm() {
 
     isMatch(formData.email, formData.password).then((check) => {
       if (check.success) {
-        if (check.data) {
-          window.alert("Login Sucessfull.");
-          redirect("/");
-        } else {
-          setErrors({ ...errors, password: "Password Incorrect" });
-        }
+        const userData = check.data;
+        userData.password = formData.password;
+
+        storeUserState("userSession", JSON.stringify(userData), 1);
+        window.alert("Login Sucessfull.");
+        redirect("/");
       } else {
         window.alert(check.error);
       }

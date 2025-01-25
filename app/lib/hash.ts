@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { getFromLocalStorage } from "./local_storage_manager";
 
-type HashResult<T> = { success: true; data: Boolean } | { success: false; error: string };
+type HashResult<T> = { success: true; data: {name: string, email:string, password: string} } | { success: false; error: string };
 type Hash<t> = { success: true; data: string} | {success: false; error: string};
 
 export async function getHashValue(password:string): Promise<Hash<null>> {
@@ -18,14 +18,21 @@ export async function getHashValue(password:string): Promise<Hash<null>> {
 export async function isMatch(email:string, plainpassword: string): Promise<HashResult<null>> {
     
     const userData = getFromLocalStorage(email)
-
+    
     if(userData == null){
         return { success: false, error: "user name not found" }
     }
+
+    const dataObject = JSON.parse(userData)
     
-    const hashedPassword = JSON.parse(userData).password
+    const hashedPassword = dataObject.password
     try {
-        return { success: true, data: await bcrypt.compare(plainpassword, hashedPassword) }
+        const isValid = await bcrypt.compare(plainpassword, hashedPassword) 
+        if (isValid){
+            return { success: true, data: dataObject}
+        }else{
+            return{ success: false, error: "username or password is incorrect"}
+        }
 
     } catch (e) {
         console.error(e);   

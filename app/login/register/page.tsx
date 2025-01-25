@@ -6,6 +6,7 @@ import Link from "next/link";
 import { getHashValue, isMatch } from "@/app/lib/hash";
 import { saveToLocalStorage } from "@/app/lib/local_storage_manager";
 import { keygen } from "@/app/lib/openpgp";
+import { redirect } from "next/navigation";
 
 export default function KeyGenForm() {
   const [formData, setFormData] = useState({
@@ -79,6 +80,7 @@ export default function KeyGenForm() {
       } else {
         window.alert(hashValue.error);
       }
+      redirect("/login");
     }
   };
 
