@@ -28,3 +28,14 @@ export function retrieveUserState(stateName: string): {name: string, email: stri
     }
     return null;
 }
+
+export function deleteUserState(stateName: string){
+    const  currentDate = new Date();
+
+    currentDate.setTime(currentDate.getTime() - (1 * 24 * 60 * 60 * 100));
+    const expires = "expires=" + currentDate.toUTCString(); 
+
+    const cookieString = `${stateName}= ;${expires};path=/`;    
+
+    document.cookie = cookieString;
+}

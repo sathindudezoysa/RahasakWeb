@@ -61,7 +61,7 @@ export default function LoginForm() {
 
         storeUserState("userSession", JSON.stringify(userData), 1);
         window.alert("Login Sucessfull.");
-        redirect("/");
+        redirect("/dashboard");
       } else {
         window.alert(check.error);
       }
@@ -125,7 +125,8 @@ export default function LoginForm() {
           </div>
         </div>
         <button
-          className="hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mb-4"
+          id="login"
+          className="background-color: #007AFF; hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mb-4"
           onClick={handleClick}
           style={{ borderRadius: "6px" }}
         >

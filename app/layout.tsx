@@ -1,5 +1,6 @@
 import "./globals.css";
 import { Roboto } from "next/font/google";
+import MiddleWare from "./lib/middleware";
 
 const roboto = Roboto({
   weight: ["400", "700"],
@@ -15,7 +16,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${roboto.className}`}>{children}</body>
+      <body className={`${roboto.className}`}>
+        <MiddleWare />
+
+        {children}
+      </body>
     </html>
   );
 }
