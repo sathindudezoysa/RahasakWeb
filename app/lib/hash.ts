@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { getFromLocalStorage } from "./local_storage_manager";
+import { keyDecryption } from "./openpgp";
 
 type HashResult<T> = { success: true; data: {name: string, email:string, password: string} } | { success: false; error: string };
 type Hash<t> = { success: true; data: string} | {success: false; error: string};
@@ -29,6 +30,15 @@ export async function isMatch(email:string, plainpassword: string): Promise<Hash
     try {
         const isValid = await bcrypt.compare(plainpassword, hashedPassword) 
         if (isValid){
+            const encryptedPrivateKey = getFromLocalStorage(`${dataObject.name}PrivateKey`);
+            if (encryptedPrivateKey == null){
+                return { success: false, error: "user Key not found" }
+            }
+            const parsedArray = JSON.parse(encryptedPrivateKey);
+
+            const x = new Uint8Array(parsedArray)
+            dataObject.passwords = await keyDecryption(x, plainpassword)
+
             return { success: true, data: dataObject}
         }else{
             return{ success: false, error: "username or password is incorrect"}

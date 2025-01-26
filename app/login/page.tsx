@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
 import { storeUserState } from "../lib/seesion_coockie";
+import { getFromLocalStorage } from "../lib/local_storage_manager";
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({
@@ -56,10 +57,7 @@ export default function LoginForm() {
 
     isMatch(formData.email, formData.password).then((check) => {
       if (check.success) {
-        const userData = check.data;
-        userData.password = formData.password;
-
-        storeUserState("userSession", JSON.stringify(userData), 1);
+        storeUserState("userSession", JSON.stringify(check.data), 1);
         window.alert("Login Sucessfull.");
         redirect("/dashboard");
       } else {
