@@ -30,15 +30,7 @@ export async function isMatch(email:string, plainpassword: string): Promise<Hash
     try {
         const isValid = await bcrypt.compare(plainpassword, hashedPassword) 
         if (isValid){
-            const encryptedPrivateKey = getFromLocalStorage(`${dataObject.name}PrivateKey`);
-            if (encryptedPrivateKey == null){
-                return { success: false, error: "user Key not found" }
-            }
-            const parsedArray = JSON.parse(encryptedPrivateKey);
-
-            const x = new Uint8Array(parsedArray)
-            dataObject.passwords = await keyDecryption(x, plainpassword)
-
+            dataObject.password = plainpassword
             return { success: true, data: dataObject}
         }else{
             return{ success: false, error: "username or password is incorrect"}
