@@ -1,5 +1,8 @@
 import * as openpgp from 'openpgp'
 import { saveToLocalStorage, getFromLocalStorage} from './local_storage_manager';
+import { List } from 'postcss/lib/list';
+
+type MessageData<T> = { success: true; data: string} | {success: false; error: string};
 
 export async function keygen(name: string, email: string, password: string): Promise<Boolean>{
     try{
@@ -68,13 +71,86 @@ export async function keyDecryption(encryptedKey:Uint8Array, pass: string) {
 
 
 
-export async function encryptMessage(message:string, publicKeyArmored: string, privateKeyArmored: string, password: string) {
+export async function encryptMessage(message:string, publicKeyArmored: string, username: string, password: string): Promise<MessageData<null>> {
+    
+    const privateKeyArmored = getFromLocalStorage(`${username}PrivateKey`)
+    if(privateKeyArmored == null){
+        return {success: false, error: "Private Key Not Found"}
+    }
+
     const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
 
     const privateKey = await openpgp.decryptKey({
         privateKey: await openpgp.readPrivateKey({ armoredKey: privateKeyArmored }),
-        passphrase: password
+        passphrase: password 
     });
-    
+
+    const encrypted = await openpgp.encrypt({
+        message: await openpgp.createMessage({ text: message }), // input as Message object
+        encryptionKeys: publicKey,
+        signingKeys: privateKey // optional
+    });
+    console.log(encrypted);
+
+    return {success: true, data: encrypted}
 }
+
+export async function encryptForGroup(message:string, publicKeysArmored: string[], username: string, password: string) {
+    const privateKeyArmored = getFromLocalStorage(`${username}PrivateKey`)
+
+    if(privateKeyArmored == null){
+        return {success: false, error: "Private Key Not Found"}
+    }
+
+    const publicKeys = await Promise.all(publicKeysArmored.map(armoredKey => openpgp.readKey({ armoredKey })));
+
+    const privateKey = await openpgp.decryptKey({
+        privateKey: await openpgp.readPrivateKey({ armoredKey: privateKeyArmored }),
+        passphrase: password 
+    });
+
+
+    const encrypted = await openpgp.encrypt({
+        message: await openpgp.createMessage({ text: message }),
+        encryptionKeys: publicKeys,
+        signingKeys: privateKey // optional
+    });
+    console.log(encrypted); 
+}
+
+export async function decryptMessage(encryptedMessage:string, publicKeyArmored: string, username: string, password: string): Promise<MessageData<null>> {
+    
+    const privateKeyArmored = getFromLocalStorage(`${username}PrivateKey`)
+
+    if(privateKeyArmored == null){
+        return {success: false, error: "Private Key Not Found"}
+    }
+    
+    const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
+
+    const privateKey = await openpgp.decryptKey({
+        privateKey: await openpgp.readPrivateKey({ armoredKey: privateKeyArmored }),
+        passphrase: password 
+    });
+
+    const message = await openpgp.readMessage({
+        armoredMessage: encryptedMessage // parse armored message
+    });
+    const { data: decrypted, signatures } = await openpgp.decrypt({
+        message,
+        verificationKeys: publicKey, // optional
+        decryptionKeys: privateKey
+    });
+
+    try {
+        await signatures[0].verified; // throws on invalid signature
+        console.log('Signature is valid');
+        return{success: true, data: decrypted}
+
+    } catch (e: any) {
+        return {success: false, error:'Signature could not be verified: ' + e.message}
+    }
+
+}
+
 
