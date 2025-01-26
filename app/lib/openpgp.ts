@@ -11,11 +11,10 @@ export async function keygen(name: string, email: string, password: string): Pro
             format: 'armored'
         });
 
-        const encryptedPrivateKey = await keyEncryption(privateKey, password)
 
 
 
-        saveToLocalStorage(`${name}PrivateKey`, encryptedPrivateKey)
+        saveToLocalStorage(`${name}PrivateKey`, privateKey)
         saveToLocalStorage(`${name}PublicKeys`, publicKey)
         saveToLocalStorage('revocationCertificate', revocationCertificate)
     
@@ -72,8 +71,13 @@ export async function keyDecryption(encryptedKey:Uint8Array, pass: string) {
 
 
 
-export async function encryptMessage(message:string) {
+export async function encryptMessage(message:string, publicKeyArmored: string, privateKeyArmored: string) {
+    const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
 
+    const privateKey = await openpgp.decryptKey({
+        privateKey: await openpgp.readPrivateKey({ armoredKey: privateKeyArmored }),
+        passphrase
+    });
     
 }
 
