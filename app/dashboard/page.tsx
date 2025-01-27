@@ -1,7 +1,45 @@
 "use client";
 import { KeyIcon } from "@heroicons/react/24/outline";
+import { getFromLocalStorage } from "../lib/local_storage_manager";
+import { retrieveUserState } from "../lib/seesion_coockie";
+import { getKeyIdFromPublicKey } from "../lib/openpgp";
+import { useEffect, useState } from "react";
 
 export default function Dashboard() {
+  interface DataItem {
+    name: string;
+    email: string;
+    date: string;
+    keyID: string;
+  }
+
+  const [jsonArray, setUserData] = useState<DataItem[]>([]);
+
+  useEffect(() => {
+    const userData = retrieveUserState("userSession");
+    if (userData == null) {
+      window.alert("Session expired");
+      return;
+    } else {
+    }
+
+    const publicKeysString = getFromLocalStorage(
+      `${userData.name}PublicKeysData`
+    );
+    const jsonArray: Array<{
+      name: string;
+      email: string;
+      date: string;
+      keyID: string;
+    }> = publicKeysString ? JSON.parse(publicKeysString) : [];
+
+    if (jsonArray.length == 0) {
+      window.alert("Your Public Keys were missing");
+    }
+
+    setUserData(jsonArray);
+  }, []);
+
   return (
     <>
       <div className="w-full">
@@ -29,29 +67,37 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              <tr className="bg-white border-b border-gray-200 hover:bg-gray-50">
-                <td>
-                  <KeyIcon className="size-6" />
-                </td>
-                <td
-                  scope="row"
-                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                >
-                  Apple MacBook Pro 17"
-                </td>
-                <td className="px-6 py-4">Silver</td>
-                <td className="px-6 py-4">Laptop</td>
-                <td className="px-6 py-4">$2999</td>
-                <td className="px-6 py-4 text-right">
-                  <a
-                    href="#"
-                    className="font-medium text-blue-600 hover:underline"
+              {jsonArray.map((item, index) => {
+                return (
+                  <tr
+                    key={index}
+                    className="bg-white border-b border-gray-200 hover:bg-gray-50"
                   >
-                    Edit
-                  </a>
-                </td>
-              </tr>
-              <tr className="bg-white border-b border-gray-200 hover:bg-gray-50">
+                    <td>
+                      <KeyIcon className="size-6" />
+                    </td>
+                    <td
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    >
+                      {item.name}
+                    </td>
+                    <td className="px-6 py-4">{item.email}</td>
+                    <td className="px-6 py-4">{item.keyID}</td>
+                    <td className="px-6 py-4">{item.date}</td>
+                    <td className="px-6 py-4 text-right">
+                      <a
+                        href="#"
+                        className="font-medium text-blue-600 hover:underline"
+                      >
+                        Edit
+                      </a>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            {/* <tr className="bg-white border-b border-gray-200 hover:bg-gray-50">
                 <td></td>
                 <td
                   scope="row"
@@ -90,8 +136,7 @@ export default function Dashboard() {
                     Edit
                   </a>
                 </td>
-              </tr>
-            </tbody>
+              </tr> */}
           </table>
         </div>
       </div>

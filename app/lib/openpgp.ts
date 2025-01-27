@@ -1,6 +1,5 @@
 import * as openpgp from 'openpgp'
-import { saveToLocalStorage, getFromLocalStorage} from './local_storage_manager';
-import { List } from 'postcss/lib/list';
+import { saveToLocalStorage, getFromLocalStorage, savePublicKeys} from './local_storage_manager';
 
 type MessageData<T> = { success: true; data: string} | {success: false; error: string};
 
@@ -14,8 +13,11 @@ export async function keygen(name: string, email: string, password: string): Pro
             format: 'armored'
         });
 
+        const currentDate = await new Date();
+        const formattedDate = currentDate.toLocaleDateString(); 
+
         saveToLocalStorage(`${name}PrivateKey`, privateKey)
-        saveToLocalStorage(`${name}PublicKeys`, publicKey)
+        savePublicKeys(name, name, email, formattedDate,publicKey)
         saveToLocalStorage('revocationCertificate', revocationCertificate)
     
         // console.log(privateKey);
@@ -153,4 +155,11 @@ export async function decryptMessage(encryptedMessage:string, publicKeyArmored: 
 
 }
 
+export async function getKeyIdFromPublicKey(publicKeyArmored: string): Promise<string> {
+    // Read the armored public key
+    const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
 
+    const keyId = publicKey.getKeyID().toHex()
+
+    return keyId;
+}

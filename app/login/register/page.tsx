@@ -4,7 +4,10 @@ import { useState } from "react";
 import clsx from "clsx";
 import Link from "next/link";
 import { getHashValue, isMatch } from "@/app/lib/hash";
-import { saveToLocalStorage } from "@/app/lib/local_storage_manager";
+import {
+  getFromLocalStorage,
+  saveToLocalStorage,
+} from "@/app/lib/local_storage_manager";
 import { keygen } from "@/app/lib/openpgp";
 import { redirect } from "next/navigation";
 
@@ -59,6 +62,12 @@ export default function KeyGenForm() {
 
   const handleClick = async () => {
     if (validateForm()) {
+      const checkavaliability = getFromLocalStorage(formData.email);
+      if (checkavaliability != null) {
+        setErrors({ ...errors, email: "Email Exists " });
+        return;
+      }
+
       const success = await keygen(
         formData.username,
         formData.email,
@@ -79,6 +88,7 @@ export default function KeyGenForm() {
         saveToLocalStorage(formData.email, JSON.stringify(userdata));
       } else {
         window.alert(hashValue.error);
+        return;
       }
       redirect("/login");
     }

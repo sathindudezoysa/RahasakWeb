@@ -8,7 +8,6 @@ export default function RootLayout({
 }>) {
   return (
     <>
-      <MiddleWare />
       <div className="h-svh flex flex-row w-screen">
         <SideNav />
         {children}
