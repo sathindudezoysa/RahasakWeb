@@ -13,7 +13,7 @@ export function storeUserState(stateName: string, stateValue: string, expireDays
 }
 
 
-export function retrieveUserState(stateName: string): {name: string, email: string, password: string} | null {
+export function retrieveUserState(stateName: string): {name: string, email: string, password: string, mykeyID: string} | null {
     const name = stateName + "=";
     const decodedCookie = decodeURIComponent(document.cookie);
     const stateEntries = decodedCookie.split(';');

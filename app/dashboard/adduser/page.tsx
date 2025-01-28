@@ -11,24 +11,7 @@ export default function AddUser() {
     if (userData == null) {
       window.alert("Session expired");
       return;
-    } else {
     }
-
-    const publicKeysString = getFromLocalStorage(
-      `${userData.name}PublicKeysData`
-    );
-    const jsonArray: Array<{
-      name: string;
-      email: string;
-      date: string;
-      keyID: string;
-    }> = publicKeysString ? JSON.parse(publicKeysString) : [];
-
-    if (jsonArray.length == 0) {
-      window.alert("Your Public Keys were missing");
-    }
-
-    const keyid = jsonArray.find((obj) => obj.name == userData.name);
 
     const publicKeys = getFromLocalStorage(`${userData.name}PublicKeys`);
     const keyArray: Array<{
@@ -36,7 +19,7 @@ export default function AddUser() {
       key: string;
     }> = publicKeys ? JSON.parse(publicKeys) : [];
 
-    const key = keyArray.find((obj) => obj.keyID == keyid?.keyID);
+    const key = keyArray.find((obj) => obj.keyID == userData.mykeyID);
 
     setPublicKey(key?.key);
   }, []);

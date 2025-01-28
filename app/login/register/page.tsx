@@ -68,27 +68,28 @@ export default function KeyGenForm() {
         return;
       }
 
-      const success = await keygen(
+      const key = await keygen(
         formData.username,
         formData.email,
         formData.password
       );
-      if (success) {
+      if (key.success) {
         window.alert("Key Generated Successfully");
+        const hashValue = await getHashValue(formData.password);
+        if (hashValue.success) {
+          const userdata = {
+            name: formData.username,
+            email: formData.email,
+            password: hashValue.data,
+            mykeyID: key.data,
+          };
+          saveToLocalStorage(formData.email, JSON.stringify(userdata));
+        } else {
+          window.alert(hashValue.error);
+          return;
+        }
       } else {
-        window.alert("Failed to generate keys");
-      }
-      const hashValue = await getHashValue(formData.password);
-      if (hashValue.success) {
-        const userdata = {
-          name: formData.username,
-          email: formData.email,
-          password: hashValue.data,
-        };
-        saveToLocalStorage(formData.email, JSON.stringify(userdata));
-      } else {
-        window.alert(hashValue.error);
-        return;
+        window.alert(key.error);
       }
       redirect("/login");
     }

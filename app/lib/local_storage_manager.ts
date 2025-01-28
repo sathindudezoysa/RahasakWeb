@@ -39,3 +39,17 @@ export async function savePublicKeys(username: string, keyOwner: string, ownerEm
     localStorage.setItem(`${username}PublicKeysData`, JSON.stringify(jsonArray2))
 
 }
+
+export function saveconversations(username: string, firendkey: string, conversationId: string){
+    const file = localStorage.getItem(`${username}Conversations`)
+    const filevalues: Array<{name: string, conversationId: string}> = file ? JSON.parse(file) : [];
+
+    const newobj ={
+        name: firendkey,
+        conversationId: conversationId
+    }
+
+    filevalues.push(newobj)
+    localStorage.setItem(`${username}Conversations`, JSON.stringify(filevalues))
+
+}

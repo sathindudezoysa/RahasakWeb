@@ -2,8 +2,10 @@ import * as openpgp from 'openpgp'
 import { saveToLocalStorage, getFromLocalStorage, savePublicKeys} from './local_storage_manager';
 
 type MessageData<T> = { success: true; data: string} | {success: false; error: string};
+type KeyData<T> = { success: true; data: string} | {success: false; error: string};
 
-export async function keygen(name: string, email: string, password: string): Promise<Boolean>{
+
+export async function keygen(name: string, email: string, password: string): Promise<KeyData<null>>{
     try{
         const { privateKey, publicKey, revocationCertificate} = await openpgp.generateKey({
             type: 'ecc',
@@ -19,13 +21,16 @@ export async function keygen(name: string, email: string, password: string): Pro
         saveToLocalStorage(`${name}PrivateKey`, privateKey)
         savePublicKeys(name, name, email, formattedDate,publicKey)
         saveToLocalStorage('revocationCertificate', revocationCertificate)
+
+        const publickeyid = await getKeyIdFromPublicKey(publicKey)
+
+        return {success: true, data: publickeyid}
     
         // console.log(privateKey);
         // console.log(publicKey);
-        return true
     } catch (e){
         console.error('Error Generating key', e)
-        return false
+        return {success: false, error: "Error when Generating Keys"}
     }
 
 }

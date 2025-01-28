@@ -1,9 +1,14 @@
 "use client";
-import { KeyIcon } from "@heroicons/react/24/outline";
+import {
+  ChatBubbleOvalLeftEllipsisIcon,
+  KeyIcon,
+} from "@heroicons/react/24/outline";
 import { getFromLocalStorage } from "../lib/local_storage_manager";
 import { retrieveUserState } from "../lib/seesion_coockie";
 import { getKeyIdFromPublicKey } from "../lib/openpgp";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { createConversation } from "../lib/firestore";
 
 export default function Dashboard() {
   interface DataItem {
@@ -12,16 +17,28 @@ export default function Dashboard() {
     date: string;
     keyID: string;
   }
-
   const [jsonArray, setUserData] = useState<DataItem[]>([]);
+
+  type user = {
+    name: string;
+    keyId: string;
+  };
+  const [mydata, setmyData] = useState<user>({
+    name: "",
+    keyId: "",
+  });
 
   useEffect(() => {
     const userData = retrieveUserState("userSession");
     if (userData == null) {
       window.alert("Session expired");
       return;
-    } else {
     }
+
+    setmyData({
+      name: userData.name,
+      keyId: userData.mykeyID,
+    });
 
     const publicKeysString = getFromLocalStorage(
       `${userData.name}PublicKeysData`
@@ -35,9 +52,9 @@ export default function Dashboard() {
 
     if (jsonArray.length == 0) {
       window.alert("Your Public Keys were missing");
+    } else {
+      setUserData(jsonArray);
     }
-
-    setUserData(jsonArray);
   }, []);
 
   return (
@@ -86,12 +103,26 @@ export default function Dashboard() {
                     <td className="px-6 py-4">{item.keyID}</td>
                     <td className="px-6 py-4">{item.date}</td>
                     <td className="px-6 py-4 text-right">
-                      <a
+                      {/* <a
                         href="#"
                         className="font-medium text-blue-600 hover:underline"
                       >
                         Edit
-                      </a>
+                      </a> */}
+                      {/* <Link href={`/dashboard/chat/${item.name}`}>
+                        <ChatBubbleOvalLeftEllipsisIcon className="size-6" />
+                      </Link> */}
+                      <button
+                        onClick={() => {
+                          createConversation(
+                            mydata.name,
+                            mydata.keyId,
+                            item.keyID
+                          );
+                        }}
+                      >
+                        <ChatBubbleOvalLeftEllipsisIcon className="size-6" />
+                      </button>
                     </td>
                   </tr>
                 );

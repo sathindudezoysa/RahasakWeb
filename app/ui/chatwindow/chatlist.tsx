@@ -4,6 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { PlusCircleIcon } from "@heroicons/react/24/solid";
+import { getConversations } from "@/app/lib/firestore";
+import { useState, useEffect } from "react";
+import { retrieveUserState } from "@/app/lib/seesion_coockie";
 
 const links = [
   {
@@ -16,7 +19,22 @@ const links = [
 ];
 
 export default function ChatList() {
+  const [publicKey, setPublicKey] = useState<string>("");
+
+  useEffect(() => {
+    const userData = retrieveUserState("userSession");
+    if (userData == null) {
+      window.alert("Session expired");
+      return;
+    }
+
+    setPublicKey(userData.mykeyID);
+  }, []);
+
   const pathname = usePathname();
+
+  // const list = getConversations(publicKey);
+  // console.log(list);
 
   return (
     <>
@@ -27,7 +45,7 @@ export default function ChatList() {
           </div>
           <Link
             key={"adduser"}
-            href={"/dashboard/adduser"}
+            href={"/dashboard/newchat"}
             className="self-center"
           >
             <PlusCircleIcon className="size-10" />
