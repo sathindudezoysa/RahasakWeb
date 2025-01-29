@@ -40,7 +40,6 @@ if (is == null){
 }
 
 export async function getConversations(userkey:string) {
-    console.log(userkey)
     const getquery = query(
         collection(db, "conversations"),
         where("participantIds", "array-contains", userkey)

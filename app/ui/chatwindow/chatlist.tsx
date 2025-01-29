@@ -28,13 +28,16 @@ export default function ChatList() {
       return;
     }
 
-    setPublicKey(userData.mykeyID);
+    // setPublicKey(userData.mykeyID);
+
+    const fetchdata = async () => {
+      const list = await getConversations(userData.mykeyID);
+      console.log(list);
+    };
+    fetchdata();
   }, []);
 
   const pathname = usePathname();
-
-  // const list = getConversations(publicKey);
-  // console.log(list);
 
   return (
     <>
