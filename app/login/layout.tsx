@@ -6,7 +6,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex h-dvh">
+    <div className="flex h-dvh w-screen">
       <div className="flex-1" style={{ position: "relative" }}>
         <Image
           src={"/wallpaper.jpg"}

@@ -38,18 +38,24 @@ if (is == null){
     return is.conversationId;
 }
 }
+type convesation = {
+    documentId: string;
+    participantIds: string[];
+  };
+export async function getConversations(userkey:string): Promise<convesation[]> {
+    
 
-export async function getConversations(userkey:string) {
     const getquery = query(
         collection(db, "conversations"),
         where("participantIds", "array-contains", userkey)
     ) 
 
     let conv:string[] = []
-
     const querySnapshot = await getDocs(getquery);
     const allDoc = querySnapshot.forEach((snap) => conv.push(JSON.stringify(snap.data())))
 
-    return conv
+    
+    const jsonArray = conv.map(str => JSON.parse(str) as convesation);
+    return jsonArray
     
 }
