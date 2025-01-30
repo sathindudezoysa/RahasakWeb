@@ -3,7 +3,7 @@ import { saveToLocalStorage, getFromLocalStorage, savePublicKeys} from './local_
 
 type MessageData<T> = { success: true; data: string} | {success: false; error: string};
 type KeyData<T> = { success: true; data: string} | {success: false; error: string};
-type PublicKeyData<T> = { success: true; data: string[]} | {success: false; error: string};
+type PublicKeyData<T> = { success: true; data: {name: string, email: string, keyid: string}} | {success: false; error: string};
 
 
 export async function keygen(name: string, email: string, password: string): Promise<KeyData<null>>{
@@ -177,7 +177,24 @@ export async function getKeyData(key:string):Promise<PublicKeyData<null>> {
         const publicKey = await openpgp.readKey({ armoredKey: key });
 
         const data = publicKey.getUserIDs()
-        return {success:true, data: data}
+        const id = publicKey.getKeyID().toHex()
+
+        const match = data[0].match(/(.+?) <(.+?)>/);
+
+        if (match) {
+            const val = {
+                name: match[1].trim(),
+                email: match[2].trim(),
+              keyid: id, 
+    
+            }
+            return {success: true, data: val}
+
+        }else{
+            return {success:false, error: "Invalid Key "}
+
+        }
+
 
     }catch(e){
         console.log(e)
