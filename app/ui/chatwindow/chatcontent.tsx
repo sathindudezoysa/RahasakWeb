@@ -1,4 +1,4 @@
-export default function ChatContent() {
+export default function ChatContent({ query }: { query: string }) {
   return (
     <>
       <div className="flex-1 h-full flex flex-col">

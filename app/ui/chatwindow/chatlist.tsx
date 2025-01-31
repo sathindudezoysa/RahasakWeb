@@ -1,13 +1,16 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import clsx from "clsx";
 import { PlusCircleIcon } from "@heroicons/react/24/solid";
 import { getConversations } from "@/app/lib/firestore";
 import { useState, useEffect } from "react";
 import { retrieveUserState } from "@/app/lib/seesion_coockie";
-import { getFromLocalStorage } from "@/app/lib/local_storage_manager";
+import {
+  getFromLocalStorage,
+  saveconversations,
+} from "@/app/lib/local_storage_manager";
 export default function ChatList() {
   const [publicKey, setPublicKey] = useState<string>("");
 
@@ -32,8 +35,18 @@ export default function ChatList() {
     // setPublicKey(userData.mykeyID);
 
     const fetchdata = async () => {
-      const list = await getConversations(userData.mykeyID);
-      console.log(list);
+      // const list = await getConversations(userData.mykeyID);
+      const list = [
+        {
+          participantIds: ["14db45431847a690", "14db45431847a690"],
+          documentId: "D6qVqoAcMWwIoK064cO1",
+        },
+        {
+          documentId: "SYfrDcfi1uAUWd1EoMyu",
+          participantIds: ["14db45431847a690", "88347a9bfb65b116"],
+        },
+      ];
+      // console.log(list);
 
       const publicKeysString = getFromLocalStorage(
         `${userData.name}PublicKeysData`
@@ -69,6 +82,11 @@ export default function ChatList() {
             const name = jsonArray.find(
               (x) => x.keyID == obj.participantIds[0]
             );
+            saveconversations(
+              userData.name,
+              obj.participantIds[0],
+              obj.documentId
+            );
             return {
               name: name ? name.name : "unknown",
               link: obj.documentId,
@@ -82,9 +100,19 @@ export default function ChatList() {
     fetchdata();
   }, []);
 
-  console.log(covesations);
-
   const pathname = usePathname();
+  const searhPrams = useSearchParams();
+  const { replace } = useRouter();
+
+  function handleChat(term: string) {
+    const params = new URLSearchParams(searhPrams);
+    if (term) {
+      params.set("query", term);
+    } else {
+      params.delete("query");
+    }
+    replace(`${pathname}?${params.toString()}`);
+  }
 
   return (
     <>
@@ -104,18 +132,18 @@ export default function ChatList() {
         <div className="grid">
           {covesations.map((link) => {
             return (
-              <Link
-                key={link.name}
-                href={link.link}
+              <div
+                key={link.link}
+                onClick={() => handleChat(link.link)}
                 className={clsx(
                   "flex mt-2 h-[93px] w-full items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-slate-100 md:flex-none md:justify-start md:p-2 md:px-3",
                   {
-                    "bg-slate-100": pathname === link.link,
+                    "bg-slate-100": searhPrams.get("query") === link.link,
                   }
                 )}
               >
                 <p>{link.name}</p>
-              </Link>
+              </div>
             );
           })}
         </div>

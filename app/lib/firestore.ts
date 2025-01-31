@@ -59,3 +59,39 @@ export async function getConversations(userkey:string): Promise<convesation[]> {
     return jsonArray
     
 }
+
+export async function getMessages(conversationKey:string) {
+    const getquery = query(
+        collection(db, "conversation", conversationKey, "messages")
+    )
+}
+
+type message ={
+    documentId: string;
+    msg: string;
+    messageType: string;
+    recipientId: string;
+    senderId: string;
+    staus: string;
+    timestamp: string;
+}
+
+type MessageStatus<T> = { success: true;} | {success: false; error: string};
+
+export async function writeMessages(content: message): Promise<MessageStatus<null>> {
+    try{
+        const docRef = await addDoc(collection(db, "conversations", content.documentId, "messages"),{
+            msg: content.msg,
+            messageType: content.messageType,
+            recipientId: content.recipientId,
+            senderId: content.senderId,
+            staus: content.staus,
+            timestamp: content.timestamp,
+        } );
+        return {success: true}
+    }catch (e){
+        console.log(e)
+        return {success: false, error: "error occured when sending message"}
+    }
+    
+}

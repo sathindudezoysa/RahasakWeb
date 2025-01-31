@@ -6,7 +6,7 @@ import {
 import { getKeyData } from "@/app/lib/openpgp";
 import { retrieveUserState } from "@/app/lib/seesion_coockie";
 import PopUp from "@/app/ui/popup";
-import { redirect } from "next/navigation";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
@@ -74,7 +74,8 @@ export default function AddUser() {
       formattedDate,
       inputKey ? inputKey : ""
     );
-    redirect("/dashboard");
+    toast("key Inserted Successfully");
+    setInputKey("");
   };
   return (
     <>
@@ -83,6 +84,12 @@ export default function AddUser() {
           trigger={true}
           childern={
             <div className="w-full flex flex-col p-3">
+              <button
+                className="self-end"
+                onClick={() => setConfirmationModal(false)}
+              >
+                <XMarkIcon className="size-6" />
+              </button>
               <div className="text-xl font-bold">
                 <p>Confirm Key to Import</p>
               </div>
@@ -182,6 +189,7 @@ export default function AddUser() {
                 onChange={(e) => {
                   setInputKey(e.target.value);
                 }}
+                defaultValue={inputKey}
               ></textarea>
               <p className="text-red-500 text-xs italic"></p>
 
