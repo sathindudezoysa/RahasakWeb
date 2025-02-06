@@ -62,7 +62,7 @@ export default function ChatBox({
 
   return (
     <>
-      <div className="flex items-center pt-2 pb-2 h-15">
+      <div className="flex items-center pt-2 pb-2 min-h-[20px]">
         <form
           onSubmit={handleSubmit}
           className="flex items-center justify-center w-full"

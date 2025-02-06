@@ -40,6 +40,10 @@ export default function Chat() {
     password: "",
     mykeyID: "",
   });
+  const [publicKeyFile, setPublicKeyFile] = useState<string>("");
+  const [publicNameFile, setPublicNameFile] = useState<string>("");
+
+  const [chatName, setChatName] = useState("");
 
   useEffect(() => {
     //Getting use state
@@ -56,8 +60,23 @@ export default function Chat() {
       window.alert("Conversations file not found");
       return;
     }
-
     setConversations(JSON.parse(conversationsString));
+
+    //Getting the public key for the recipent
+    const publicKeyStrings = getFromLocalStorage(`${y.name}PublicKeys`);
+
+    if (publicKeyStrings == null) {
+      window.alert("Public Key file not found");
+      return;
+    }
+    setPublicKeyFile(publicKeyStrings);
+
+    const publicNameString = getFromLocalStorage(`${y.name}PublicKeysData`);
+    if (publicNameString == null) {
+      window.alert("Public Key Names file not found");
+      return;
+    }
+    setPublicNameFile(publicNameString);
     setCount(count + 1);
   }, []);
 
@@ -69,16 +88,7 @@ export default function Chat() {
         return;
       }
 
-      //Getting the public key for the recipent
-      const publicKeyStrings = getFromLocalStorage(
-        `${userData.name}PublicKeys`
-      );
-
-      if (publicKeyStrings == null) {
-        window.alert("Public Key file not found");
-        return;
-      }
-      const publicKeys = JSON.parse(publicKeyStrings);
+      const publicKeys = JSON.parse(publicKeyFile);
       //Find the recipient id from the convesation
       const fkey = publicKeys.find(
         (u: { keyID: string; key: string }) => u.keyID == recipientId.name
@@ -95,14 +105,21 @@ export default function Chat() {
           friendkey: fkey.key,
         });
       }
+      const friendnames = JSON.parse(publicNameFile);
+      console.log(friendnames);
+      const friendName = friendnames.find(
+        (u: { name: string; email: string; date: string; keyID: string }) =>
+          u.keyID == recipientId.name
+      );
+      setChatName(friendName.name);
     }
   }, [query, count]);
 
   return (
     <>
-      <div className="flex-1 bg-slate-100  ml-4 flex flex-col w-full min-w-[400px]">
-        <ChatHeader />
-        <div className="ml-10 mr-10 flex flex-col h-full">
+      <div className="flex-1 bg-slate-100  ml-4 flex flex-col w-full h-full min-w-[400px]">
+        <ChatHeader name={chatName} />
+        <div className="ml-10 mr-10 h-full overflow-hidden flex flex-col ">
           {query !== "" && (
             <ChatContent
               query={query}

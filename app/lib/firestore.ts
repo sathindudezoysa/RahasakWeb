@@ -92,3 +92,14 @@ export async function writeMessages(content: message): Promise<MessageStatus<nul
     }
     
 }
+
+export async function updateMessageStatus(documentId: string, messageId: string){
+    const docRef =  doc(db, "conversations", documentId, "messages", messageId);
+    try{
+        await updateDoc(docRef, {
+            staus: "delivered"
+        })
+    }catch(e){
+        console.log(e)
+    }
+}

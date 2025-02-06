@@ -15,8 +15,8 @@ export function getMessages(conversationKey: string){
     useEffect(()=>{
         const getquery = query(
             collection(db, "conversations", conversationKey, "messages"),
-            orderBy("timestamp"),
-            limit(10)
+            orderBy("timestamp", "desc"),
+            limit(20)
         )
         
         const unsubscribe = onSnapshot(getquery, (snapshot) => {

@@ -8,7 +8,7 @@ export default function RootLayout({
 }>) {
   return (
     <>
-      <div className="h-svh flex flex-row w-screen">
+      <div className="h-screen flex flex-row w-screen">
         <SideNav />
         {children}
       </div>
