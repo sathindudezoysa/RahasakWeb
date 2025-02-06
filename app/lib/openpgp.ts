@@ -98,12 +98,12 @@ export async function encryptMessage(message:string, publicKeyArmored: string, u
         encryptionKeys: publicKey,
         signingKeys: privateKey // optional
     });
-    console.log(encrypted);
+    // console.log(encrypted);
 
     return {success: true, data: encrypted}
 }
 
-export async function encryptForGroup(message:string, publicKeysArmored: string[], username: string, password: string) {
+export async function encryptForGroup(message:string, publicKeysArmored: string[], username: string, password: string): Promise<MessageData<null>> {
     const privateKeyArmored = getFromLocalStorage(`${username}PrivateKey`)
 
     if(privateKeyArmored == null){
@@ -123,7 +123,9 @@ export async function encryptForGroup(message:string, publicKeysArmored: string[
         encryptionKeys: publicKeys,
         signingKeys: privateKey // optional
     });
-    console.log(encrypted); 
+    // console.log(encrypted); 
+    return {success: true, data: encrypted}
+
 }
 
 export async function decryptMessage(encryptedMessage:string, publicKeyArmored: string, username: string, password: string): Promise<MessageData<null>> {
@@ -152,6 +154,7 @@ export async function decryptMessage(encryptedMessage:string, publicKeyArmored: 
 
     try {
         await signatures[0].verified; // throws on invalid signature
+        // console.log(decrypted)
         console.log('Signature is valid');
         return{success: true, data: decrypted}
 

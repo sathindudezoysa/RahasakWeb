@@ -1,13 +1,14 @@
-import { doc, Firestore, getDoc, getDocs, getFirestore, orderBy, query, updateDoc, where } from "@firebase/firestore";
+import { doc, Firestore, getDoc, getDocs, getFirestore, limit, orderBy, query, updateDoc, where } from "@firebase/firestore";
 import { addDoc, collection } from "@firebase/firestore";
 
 import app from "./firebaseConfig";
 import { getFromLocalStorage, saveconversations } from "./local_storage_manager";
+import { Timestamp } from "@firebase/firestore";
 
 const db = getFirestore(app)
 export default db;
 
-export async function createConversation(username: string, userkey: string, friendkey: string){
+export async function createConversation(username: string, userkey: string, friendkey: string): Promise<string | null>{
 
     const conversations = getFromLocalStorage(`${username}Conversations`)
     const filevalues: Array<{name: string, conversationId: string}> = conversations ? JSON.parse(conversations) : [];
@@ -30,14 +31,14 @@ if (is == null){
         return docRef.id
     }catch(e){
         console.log(e)
+        return null
     }
 }else{
-
-    console.log(is.conversationId)
 
     return is.conversationId;
 }
 }
+
 type convesation = {
     documentId: string;
     participantIds: string[];
@@ -60,11 +61,7 @@ export async function getConversations(userkey:string): Promise<convesation[]> {
     
 }
 
-export async function getMessages(conversationKey:string) {
-    const getquery = query(
-        collection(db, "conversation", conversationKey, "messages")
-    )
-}
+
 
 type message ={
     documentId: string;
@@ -86,7 +83,7 @@ export async function writeMessages(content: message): Promise<MessageStatus<nul
             recipientId: content.recipientId,
             senderId: content.senderId,
             staus: content.staus,
-            timestamp: content.timestamp,
+            timestamp: Timestamp.now(),
         } );
         return {success: true}
     }catch (e){

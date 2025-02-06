@@ -9,6 +9,7 @@ import { getKeyIdFromPublicKey } from "../lib/openpgp";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createConversation } from "../lib/firestore";
+import { redirect, useSearchParams } from "next/navigation";
 
 export default function Dashboard() {
   interface DataItem {
@@ -56,6 +57,18 @@ export default function Dashboard() {
       setUserData(jsonArray);
     }
   }, []);
+  const searchPrams = useSearchParams();
+
+  async function messageBtnClick(keyId: string) {
+    const id = await createConversation(mydata.name, mydata.keyId, keyId);
+    if (id == null) {
+      window.alert("Error while creating this conversation");
+    } else {
+      const params = new URLSearchParams(searchPrams);
+      params.set("query", id);
+      redirect(`/dashboard/chat?${params.toString()}`);
+    }
+  }
 
   return (
     <>
@@ -112,15 +125,7 @@ export default function Dashboard() {
                       {/* <Link href={`/dashboard/chat/${item.name}`}>
                         <ChatBubbleOvalLeftEllipsisIcon className="size-6" />
                       </Link> */}
-                      <button
-                        onClick={() => {
-                          createConversation(
-                            mydata.name,
-                            mydata.keyId,
-                            item.keyID
-                          );
-                        }}
-                      >
+                      <button onClick={() => messageBtnClick(item.keyID)}>
                         <ChatBubbleOvalLeftEllipsisIcon className="size-6" />
                       </button>
                     </td>

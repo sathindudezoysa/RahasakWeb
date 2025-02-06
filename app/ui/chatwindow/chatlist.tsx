@@ -35,17 +35,8 @@ export default function ChatList() {
     // setPublicKey(userData.mykeyID);
 
     const fetchdata = async () => {
-      // const list = await getConversations(userData.mykeyID);
-      const list = [
-        {
-          participantIds: ["14db45431847a690", "14db45431847a690"],
-          documentId: "D6qVqoAcMWwIoK064cO1",
-        },
-        {
-          documentId: "SYfrDcfi1uAUWd1EoMyu",
-          participantIds: ["14db45431847a690", "88347a9bfb65b116"],
-        },
-      ];
+      const list = await getConversations(userData.mykeyID);
+
       // console.log(list);
 
       const publicKeysString = getFromLocalStorage(
