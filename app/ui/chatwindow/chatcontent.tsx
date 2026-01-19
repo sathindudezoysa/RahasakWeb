@@ -108,7 +108,7 @@ export default function ChatContent({
                   values.owner == "me",
               })}
             >
-              <div className="text-lg">{values.content}</div>
+              <div className="text-lg overflow-x-auto">{values.content}</div>
               <div className="flex flex-row self-end">
                 <div className="text-sm">
                   {values.date.toDate().toLocaleTimeString()}
