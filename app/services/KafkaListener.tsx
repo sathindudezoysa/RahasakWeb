@@ -2,7 +2,7 @@ import { Message } from "../types/type";
 
 export function KafkaListner(
   topic: string,
-  onMessage?: (msg: Message) => void,
+  onMessage?: (msg: Message[]) => void,
 ) {
   const url = `http://localhost:8080/stream?topic=${encodeURIComponent(topic)}`;
 
@@ -28,7 +28,7 @@ export function KafkaListner(
 
       localStorage.setItem(storageKey, JSON.stringify(existingHistory));
 
-      if (onMessage) onMessage(newMessage);
+      if (onMessage) onMessage(existingHistory);
     } catch (error) {
       console.error("Error processing Kafka message:", error);
     }

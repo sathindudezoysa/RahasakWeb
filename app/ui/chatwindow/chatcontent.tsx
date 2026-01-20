@@ -27,12 +27,13 @@ export default function ChatContent({
 
   const [messages, setMessages] = useState<messageType[]>([]);
 
-  const { data } = getMessages(query);
+  const { data } = getMessages(userData.mykeyID);
 
   const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const fetchMessages = async () => {
+      if (!data) return;
       const decryptedMessages: messageType[] = await Promise.all(
         data.reverse().map(async (message) => {
           if (message.senderId == userData.mykeyID) {
@@ -40,13 +41,13 @@ export default function ChatContent({
               message.msg,
               publicKey.userkey,
               userData.name,
-              userData.password
+              userData.password,
             );
             if (msg.success) {
               return {
                 owner: "me",
                 content: msg.data,
-                date: message.timestamp,
+                date: Timestamp.fromDate(new Date(message.timestamp)),
                 status: message.staus,
               };
             } else {
@@ -54,7 +55,7 @@ export default function ChatContent({
               return {
                 owner: "me",
                 content: "Error Decrypting you message",
-                date: message.timestamp,
+                date: Timestamp.fromDate(new Date(message.timestamp)),
                 status: message.staus,
               };
             }
@@ -63,14 +64,14 @@ export default function ChatContent({
               message.msg,
               publicKey.friendkey,
               userData.name,
-              userData.password
+              userData.password,
             );
             updateMessageStatus(query, message.id);
             if (msg.success) {
               return {
                 owner: "friend",
                 content: msg.data,
-                date: message.timestamp,
+                date: Timestamp.fromDate(new Date(message.timestamp)),
                 status: message.staus,
               };
             } else {
@@ -78,12 +79,12 @@ export default function ChatContent({
               return {
                 owner: "friend",
                 content: "Error Decrypting you message",
-                date: message.timestamp,
+                date: Timestamp.fromDate(new Date(message.timestamp)),
                 status: message.staus,
               };
             }
           }
-        })
+        }),
       );
       setMessages(decryptedMessages);
     };
