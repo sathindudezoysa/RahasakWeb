@@ -6,11 +6,8 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { retrieveUserState } from "@/app/lib/seesion_coockie";
 import { getFromLocalStorage } from "@/app/lib/local_storage_manager";
+import { getAllChats } from "./lib/ManageChats";
 
-export interface conversationsType {
-  name: string;
-  conversationId: string;
-}
 export interface publicKeyType {
   userkey: string;
   friendkeyID: string;
@@ -28,7 +25,7 @@ export default function Chat() {
   const query = searchParams.get("query") || "";
 
   const [count, setCount] = useState(0);
-  const [conversations, setConversations] = useState<conversationsType[]>([]);
+  const [conversations, setConversations] = useState<string[]>([]);
   const [publicKey, setPublicKey] = useState<publicKeyType>({
     userkey: "",
     friendkeyID: "",
@@ -55,12 +52,14 @@ export default function Chat() {
     setUserData(y);
 
     //Getting the conversations
-    const conversationsString = getFromLocalStorage(`${y.name}Conversations`);
-    if (conversationsString == null) {
-      window.alert("Conversations file not found");
-      return;
-    }
-    setConversations(JSON.parse(conversationsString));
+    // const conversationsString = getFromLocalStorage(`${y.name}Conversations`);
+    // if (conversationsString == null) {
+    //   window.alert("Conversations file not found");
+    //   return;
+    // }
+    const chats = getAllChats();
+    const recipients = Object.keys(chats);
+    setConversations(recipients);
 
     //Getting the public key for the recipent
     const publicKeyStrings = getFromLocalStorage(`${y.name}PublicKeys`);
@@ -83,25 +82,29 @@ export default function Chat() {
   // Find the recipient id from the convesation
   useEffect(() => {
     if (query != "" && count > 0) {
-      const recipientId = conversations.find((u) => u.conversationId == query);
+      const recipientId = conversations.find((u) => u == query);
       if (recipientId == null) {
         return;
       }
 
       const publicKeys = JSON.parse(publicKeyFile);
-      //Find the recipient id from the convesation
+
+      //Find the friends public key
       const fkey = publicKeys.find(
-        (u: { keyID: string; key: string }) => u.keyID == recipientId.name
+        (u: { keyID: string; key: string }) => u.keyID == recipientId,
       );
+
+      //Find my public key
       const ukey = publicKeys.find(
-        (u: { keyID: string; key: string }) => u.keyID == userData.mykeyID
+        (u: { keyID: string; key: string }) => u.keyID == userData.mykeyID,
       );
+
       if (fkey == null || ukey == null) {
         window.alert("key not found");
       } else {
         setPublicKey({
           userkey: ukey.key,
-          friendkeyID: recipientId.name,
+          friendkeyID: recipientId,
           friendkey: fkey.key,
         });
       }
@@ -109,7 +112,7 @@ export default function Chat() {
       console.log(friendnames);
       const friendName = friendnames.find(
         (u: { name: string; email: string; date: string; keyID: string }) =>
-          u.keyID == recipientId.name
+          u.keyID == recipientId,
       );
       setChatName(friendName.name);
     }

@@ -11,6 +11,7 @@ import {
   getFromLocalStorage,
   saveconversations,
 } from "@/app/lib/local_storage_manager";
+import { getAllChats } from "@/app/dashboard/chat/lib/ManageChats";
 export default function ChatList() {
   const [publicKey, setPublicKey] = useState<string>("");
 
@@ -34,61 +35,72 @@ export default function ChatList() {
 
     // setPublicKey(userData.mykeyID);
 
-    const fetchdata = async () => {
-      const list = await getConversations(userData.mykeyID);
+    // const fetchdata = async () => {
+    //   const list = await getConversations(userData.mykeyID);
 
-      // console.log(list);
+    // console.log(list);
 
-      const publicKeysString = getFromLocalStorage(
-        `${userData.name}PublicKeysData`
-      );
-      const jsonArray: Array<{
-        name: string;
-        email: string;
-        date: string;
-        keyID: string;
-      }> = publicKeysString ? JSON.parse(publicKeysString) : [];
+    const chats = getAllChats();
+    const list = Object.keys(chats);
 
-      if (jsonArray == null) {
-        window.alert("Can not find the public keys");
-        return;
-      }
+    const publicKeysString = getFromLocalStorage(
+      `${userData.name}PublicKeysData`,
+    );
+    const jsonArray: Array<{
+      name: string;
+      email: string;
+      date: string;
+      keyID: string;
+    }> = publicKeysString ? JSON.parse(publicKeysString) : [];
 
-      const combine = (): conversation[] => {
-        return list.map((obj) => {
-          if (obj.participantIds[0] == obj.participantIds[1]) {
-            return {
-              name: userData.name,
-              link: obj.documentId,
-            };
-          } else if (obj.participantIds[0] == userData.mykeyID) {
-            const name = jsonArray.find(
-              (x) => x.keyID == obj.participantIds[1]
-            );
-            return {
-              name: name ? name.name : "unknown",
-              link: obj.documentId,
-            };
-          } else {
-            const name = jsonArray.find(
-              (x) => x.keyID == obj.participantIds[0]
-            );
-            saveconversations(
-              userData.name,
-              obj.participantIds[0],
-              obj.documentId
-            );
-            return {
-              name: name ? name.name : "unknown",
-              link: obj.documentId,
-            };
-          }
-        });
-      };
+    if (jsonArray == null) {
+      window.alert("Can not find the public keys");
+      return;
+    }
 
-      setLinks(combine);
+    const combine = (): conversation[] => {
+      return list.map((obj) => {
+        const name = jsonArray.find((x) => x.keyID == obj);
+        return {
+          name: name ? name.name : "unknown",
+          link: obj,
+        };
+      });
     };
-    fetchdata();
+    setLinks(combine);
+
+    // const combine = (): conversation[] => {
+    //   return list.map((obj) => {
+    //     if (obj.participantIds[0] == obj.participantIds[1]) {
+    //       return {
+    //         name: userData.name,
+    //         link: obj.documentId,
+    //       };
+    //     } else if (obj.participantIds[0] == userData.mykeyID) {
+    //       const name = jsonArray.find(
+    //         (x) => x.keyID == obj.participantIds[1]
+    //       );
+    //       return {
+    //         name: name ? name.name : "unknown",
+    //         link: obj.documentId,
+    //       };
+    //     } else {
+    //       const name = jsonArray.find(
+    //         (x) => x.keyID == obj.participantIds[0]
+    //       );
+    //       saveconversations(
+    //         userData.name,
+    //         obj.participantIds[0],
+    //         obj.documentId
+    //       );
+    //       return {
+    //         name: name ? name.name : "unknown",
+    //         link: obj.documentId,
+    //       };
+    //     }
+    //   });
+    // };
+    // setLinks(combine);
   }, []);
 
   const pathname = usePathname();
@@ -130,7 +142,7 @@ export default function ChatList() {
                   "flex mt-2 h-[93px] w-full items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-slate-100 md:flex-none md:justify-start md:p-2 md:px-3",
                   {
                     "bg-slate-100": searhPrams.get("query") === link.link,
-                  }
+                  },
                 )}
               >
                 <p>{link.name}</p>

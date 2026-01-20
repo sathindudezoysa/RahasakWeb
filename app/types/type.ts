@@ -1,6 +1,6 @@
 // types.ts
 export type Message = {
-  documentId: string;
+  id: string;
   msg: string;
   messageType: string;
   recipientId: string;

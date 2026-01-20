@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createConversation } from "../lib/firestore";
 import { redirect, useSearchParams } from "next/navigation";
+import { messageService } from "../services/MessageService";
 
 export default function Dashboard() {
   interface DataItem {
@@ -42,7 +43,7 @@ export default function Dashboard() {
     });
 
     const publicKeysString = getFromLocalStorage(
-      `${userData.name}PublicKeysData`
+      `${userData.name}PublicKeysData`,
     );
     const jsonArray: Array<{
       name: string;
@@ -60,14 +61,19 @@ export default function Dashboard() {
   const searchPrams = useSearchParams();
 
   async function messageBtnClick(keyId: string) {
-    const id = await createConversation(mydata.name, mydata.keyId, keyId);
-    if (id == null) {
-      window.alert("Error while creating this conversation");
-    } else {
-      const params = new URLSearchParams(searchPrams);
-      params.set("query", id);
-      redirect(`/dashboard/chat?${params.toString()}`);
-    }
+    messageService.createConversation(keyId);
+    const params = new URLSearchParams(searchPrams);
+    params.set("query", keyId);
+    // redirect(`/dashboard/chat?${params.toString()}`);
+
+    // const id = await createConversation(mydata.name, mydata.keyId, keyId);
+    // if (id == null) {
+    //   window.alert("Error while creating this conversation");
+    // } else {
+    //   const params = new URLSearchParams(searchPrams);
+    //   params.set("query", id);
+    //   redirect(`/dashboard/chat?${params.toString()}`);
+    // }
   }
 
   return (

@@ -5,11 +5,9 @@ import { useEffect, useState } from "react";
 import { retrieveUserState } from "@/app/lib/seesion_coockie";
 import { encryptForGroup, encryptMessage } from "@/app/lib/openpgp";
 import { writeMessages } from "@/app/lib/firestore";
-import {
-  conversationsType,
-  publicKeyType,
-  userDataType,
-} from "@/app/dashboard/chat/page";
+import { publicKeyType, userDataType } from "@/app/dashboard/chat/page";
+import { messageService } from "@/app/services/MessageService";
+import { Message } from "@/app/types/type";
 
 export default function ChatBox({
   query,
@@ -39,22 +37,51 @@ export default function ChatBox({
       plainMessage,
       [publicKey.friendkey, publicKey.userkey],
       userData.name,
-      userData.password
+      userData.password,
     );
     if (message.success) {
-      const send = await writeMessages({
-        documentId: query,
+      // const send = await writeMessages({
+      //   documentId: query,
+      //   msg: message.data,
+      //   messageType: "text",
+      //   recipientId: publicKey.friendkeyID,
+      //   senderId: userData.mykeyID,
+      //   staus: "sent",
+      //   timestamp: "",
+      // });
+
+      const newMessage: Message = {
+        id: Date.now().toString() + Math.random().toString(36).substring(2, 9), //Crete a unique id
         msg: message.data,
         messageType: "text",
         recipientId: publicKey.friendkeyID,
         senderId: userData.mykeyID,
         staus: "sent",
         timestamp: "",
-      });
+      };
+
+      const send = await messageService.sendMessage(newMessage);
       setMessages("");
       if (!send.success) {
         window.alert(send.error);
       }
+
+      //Saving the send chat in local device
+      const storageKey = `chat-${publicKey.friendkeyID}`;
+
+      const stored = localStorage.getItem(storageKey);
+      let existingHistory: Message[] = [];
+
+      try {
+        const parsed = JSON.parse(stored || "[]");
+        existingHistory = Array.isArray(parsed) ? parsed : [];
+      } catch {
+        existingHistory = [];
+      }
+
+      existingHistory.push(newMessage);
+
+      localStorage.setItem(storageKey, JSON.stringify(existingHistory));
     } else {
       window.alert(message.error);
     }
