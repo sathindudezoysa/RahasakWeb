@@ -1,0 +1,70 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36" version="29.3.4">
+  <diagram name="Page-1" id="PEh4XEAW1rDnUYGEesQ4">
+    <mxGraphModel dx="1164" dy="745" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2ZOZpmmWU9xAcXZvav1--1" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Sender" vertex="1">
+          <mxGeometry height="60" width="30" x="230" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="2ZOZpmmWU9xAcXZvav1--2" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Recipient" vertex="1">
+          <mxGeometry height="60" width="30" x="550" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="2ZOZpmmWU9xAcXZvav1--3" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="330" y="398.38" as="sourcePoint" />
+            <mxPoint x="480" y="398.38" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2ZOZpmmWU9xAcXZvav1--4" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;endFill=0;startArrow=classic;startFill=1;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="332" y="428.38" as="sourcePoint" />
+            <mxPoint x="482" y="428.38" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2ZOZpmmWU9xAcXZvav1--5" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Exchange Public Key P&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;hysically.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="30" width="204" x="312" y="399" as="geometry" />
+        </mxCell>
+        <mxCell id="2ZOZpmmWU9xAcXZvav1--6" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.security.key_permissions;rotation=90;" value="" vertex="1">
+          <mxGeometry height="32" width="15" x="398" y="358.38" as="geometry" />
+        </mxCell>
+        <mxCell id="2ZOZpmmWU9xAcXZvav1--7" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.security.key_permissions;fillColor=#2072B8;" value="" vertex="1">
+          <mxGeometry height="26.5" width="15" x="190" y="392" as="geometry" />
+        </mxCell>
+        <mxCell id="2ZOZpmmWU9xAcXZvav1--8" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.security.key_permissions;fillColor=#2072B8;" value="" vertex="1">
+          <mxGeometry height="26.5" width="15" x="590" y="392" as="geometry" />
+        </mxCell>
+        <mxCell id="2ZOZpmmWU9xAcXZvav1--9" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Private Key" vertex="1">
+          <mxGeometry height="30" width="60" x="145" y="418.5" as="geometry" />
+        </mxCell>
+        <mxCell id="2ZOZpmmWU9xAcXZvav1--10" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Private Key" vertex="1">
+          <mxGeometry height="30" width="60" x="605" y="399" as="geometry" />
+        </mxCell>
+        <mxCell id="2ZOZpmmWU9xAcXZvav1--14" edge="1" parent="1" source="2ZOZpmmWU9xAcXZvav1--12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;curved=1;" target="2ZOZpmmWU9xAcXZvav1--2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="2ZOZpmmWU9xAcXZvav1--12" parent="1" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;fillColor=#FF6A00;strokeColor=none;shape=mxgraph.alibaba_cloud.kafka;" value="" vertex="1">
+          <mxGeometry height="42" width="56.699999999999996" x="385.65" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="2ZOZpmmWU9xAcXZvav1--13" edge="1" parent="1" source="2ZOZpmmWU9xAcXZvav1--1" style="endArrow=classic;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;curved=1;" target="2ZOZpmmWU9xAcXZvav1--12" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="260" y="261" />
+            </Array>
+            <mxPoint x="250" y="358.38" as="sourcePoint" />
+            <mxPoint x="300" y="308.38" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="2ZOZpmmWU9xAcXZvav1--15" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Encrypted Messages Stream via Kfka" vertex="1">
+          <mxGeometry height="30" width="210" x="309" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="2ZOZpmmWU9xAcXZvav1--18" parent="1" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://icons.diagrams.net/icon-cache1/Coronavirus_Information-2304/limit_physical_contact-1043.svg" value="" vertex="1">
+          <mxGeometry height="128" width="128" x="341.5" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="2ZOZpmmWU9xAcXZvav1--19" parent="1" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.security.key_permissions;rotation=90;" value="" vertex="1">
+          <mxGeometry height="26.5" width="14" x="407" y="470" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

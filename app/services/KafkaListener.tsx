@@ -9,12 +9,25 @@ export function KafkaListner(
   const eventSource = new EventSource(url);
 
   eventSource.onmessage = (event) => {
+    console.log("RAW SSE EVENT:", event.data);
+
     try {
-      const newMessage: Message = JSON.parse(event.data);
-      const recipientId = newMessage.recipientId;
+      let parsed = JSON.parse(event.data);
+
+      // 🔥 Handle double-encoded JSON
+      if (typeof parsed === "string") {
+        parsed = JSON.parse(parsed);
+      }
+
+      if (!parsed || typeof parsed !== "object") {
+        console.warn("Invalid SSE payload:", parsed);
+        return;
+      }
+
+      const { recipientId } = parsed;
 
       if (!recipientId) {
-        console.warn("Received message without recipientId:", newMessage);
+        console.warn("Received message without recipientId:", parsed);
         return;
       }
 
@@ -24,13 +37,10 @@ export function KafkaListner(
         localStorage.getItem(storageKey) || "[]",
       );
 
-      existingHistory.push(newMessage);
-
+      existingHistory.push(parsed);
       localStorage.setItem(storageKey, JSON.stringify(existingHistory));
-
-      if (onMessage) onMessage(existingHistory);
-    } catch (error) {
-      console.error("Error processing Kafka message:", error);
+    } catch (err) {
+      console.error("SSE parse error:", err, event.data);
     }
   };
 

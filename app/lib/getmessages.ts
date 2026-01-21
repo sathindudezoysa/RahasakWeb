@@ -9,21 +9,18 @@ const db = getFirestore(app)
 import { useEffect, useState } from "react"
 import { KafkaListner } from "../services/KafkaListener";
 import { Message } from "../types/type";
+import { getAllChats } from "../dashboard/chat/lib/ManageChats";
 
-export function getMessages(myKey: string){
+export function getMessages(conversationKey: string){
 
     const [data, setData] = useState<Message[]>()
 
     useEffect(() => {
-        const stream = KafkaListner(myKey, (msg) => {
-          console.log("New message:", msg);
-          setData(msg);
-        });
-    
-        return () => {
-          stream.close();
-        };
-      }, [data]);
+        const chatsRecord = getAllChats();
+        const chats = chatsRecord[conversationKey] || [];
+        console.log(chats);
+        setData(chats)
+      }, [conversationKey]);
     
     // useEffect(()=>{
     //     const getquery = query(

@@ -27,12 +27,13 @@ export default function ChatContent({
 
   const [messages, setMessages] = useState<messageType[]>([]);
 
-  const { data } = getMessages(userData.mykeyID);
+  const { data } = getMessages(query);
 
   const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const fetchMessages = async () => {
+      console.log(data);
       if (!data) return;
       const decryptedMessages: messageType[] = await Promise.all(
         data.reverse().map(async (message) => {

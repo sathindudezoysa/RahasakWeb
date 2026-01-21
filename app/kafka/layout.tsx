@@ -6,6 +6,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <>
       <div className="h-screen flex flex-row w-screen">

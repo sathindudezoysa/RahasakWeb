@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { retrieveUserState } from "@/app/lib/seesion_coockie";
 import { getFromLocalStorage } from "@/app/lib/local_storage_manager";
 import { getAllChats } from "./lib/ManageChats";
+import { KafkaListner } from "@/app/services/KafkaListener";
 
 export interface publicKeyType {
   userkey: string;
@@ -57,6 +58,11 @@ export default function Chat() {
     //   window.alert("Conversations file not found");
     //   return;
     // }
+
+    const stream = KafkaListner(y.mykeyID, (msg) => {
+      console.log("New message:", msg);
+    });
+
     const chats = getAllChats();
     const recipients = Object.keys(chats);
     setConversations(recipients);
@@ -77,6 +83,10 @@ export default function Chat() {
     }
     setPublicNameFile(publicNameString);
     setCount(count + 1);
+
+    return () => {
+      stream.close();
+    };
   }, []);
 
   // Find the recipient id from the convesation
